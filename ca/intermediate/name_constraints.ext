@@ -1,0 +1,5 @@
+basicConstraints=CA:TRUE
+keyUsage=keyCertSign, cRLSign
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer
+nameConstraints=critical, permitted;DNS:only-this-domain-is-allowed.com
