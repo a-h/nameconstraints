@@ -22,7 +22,8 @@ func startServer(addr, certFile, keyFile string) {
 
 func main() {
 	go startServer(":8443", "ca/certs/allowed.chain.pem", "ca/certs/allowed.key.pem")
-	go startServer(":8444", "ca/certs/not_allowed.chain.pem", "ca/certs/not_allowed.key.pem")
+	go startServer(":8444", "ca/certs/correct_domain_wrong_o.chain.pem", "ca/certs/correct_domain_wrong_o.key.pem")
+	go startServer(":8445", "ca/certs/incorrect_domain_correct_o.chain.pem", "ca/certs/incorrect_domain_correct_o.key.pem")
 
 	select {} // block forever
 }

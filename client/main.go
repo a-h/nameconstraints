@@ -54,6 +54,12 @@ func makeRequest(addr, serverName string, expectedOK bool) {
 }
 
 func main() {
+	fmt.Println("Correct domain and organization")
 	makeRequest(":8443", "only-this-domain-is-allowed.com", true)
-	makeRequest(":8444", "this-domain-is-not-allowed.com", false)
+	fmt.Println()
+	fmt.Println("Correct domain but wrong organization")
+	makeRequest(":8444", "only-this-domain-is-allowed.com", false)
+	fmt.Println()
+	fmt.Println("Incorrect domain but correct organization")
+	makeRequest(":8445", "this-domain-is-not-allowed.com", false)
 }

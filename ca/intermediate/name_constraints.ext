@@ -1,5 +1,10 @@
+[ name_constraints ]
 basicConstraints=CA:TRUE
 keyUsage=keyCertSign, cRLSign
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer
-nameConstraints=critical, permitted;DNS:only-this-domain-is-allowed.com
+nameConstraints = critical, permitted;DNS:only-this-domain-is-allowed.com, permitted;dirName:permitted_dn
+
+[ permitted_dn ]
+C=US
+O=AllowedOrg

@@ -39,7 +39,8 @@ openssl x509 -req \
   -CA ca/root/root.cert.pem -CAkey ca/root/root.key.pem -CAcreateserial \
   -out ca/intermediate/intermediate.cert.pem \
   -days 3650 -sha256 \
-  -extfile ca/intermediate/name_constraints.ext
+  -extfile ca/intermediate/name_constraints.ext \
+  -extensions name_constraints
 ```
 
 ### create-valid-cert
@@ -66,28 +67,52 @@ openssl x509 -req \
   -extfile ca/certs/allowed.ext
 ```
 
-### create-invalid-cert
+### create-invalid-cert-correct-domain-wrong-o
+
+The intermediate CA can create certs for only-this-domain-is-allowed.com but they should be rejected by clients.
+
+```bash
+openssl genrsa -out ca/certs/correct_domain_wrong_o.key.pem 2048
+
+openssl req -new -key ca/certs/correct_domain_wrong_o.key.pem \
+  -subj "/C=US/O=WrongOrg/CN=only-this-domain-is-allowed.com" \
+  -out ca/certs/correct_domain_wrong_o.csr.pem
+
+cat > ca/certs/correct_domain_wrong_o.ext <<EOF
+subjectAltName = DNS:only-this-domain-is-allowed.com
+EOF
+
+openssl x509 -req \
+  -in ca/certs/correct_domain_wrong_o.csr.pem \
+  -CA ca/intermediate/intermediate.cert.pem \
+  -CAkey ca/intermediate/intermediate.key.pem -CAcreateserial \
+  -out ca/certs/correct_domain_wrong_o.cert.pem \
+  -days 365 -sha256 \
+  -extfile ca/certs/correct_domain_wrong_o.ext
+```
+
+### create-invalid-cert-incorrect-domain-correct-o
 
 The intermediate CA can create certs for this-domain-is-not-allowed.com but they should be rejected by clients.
 
 ```bash
-openssl genrsa -out ca/certs/not_allowed.key.pem 2048
+openssl genrsa -out ca/certs/incorrect_domain_correct_o.key.pem 2048
 
-openssl req -new -key ca/certs/not_allowed.key.pem \
-  -subj "/CN=this-domain-is-not-allowed.com" \
-  -out ca/certs/not_allowed.csr.pem
+openssl req -new -key ca/certs/incorrect_domain_correct_o.key.pem \
+  -subj "/C=US/O=AllowedOrg/CN=this-domain-is-not-allowed.com" \
+  -out ca/certs/incorrect_domain_correct_o.csr.pem
 
-cat > ca/certs/not_allowed.ext <<EOF
+cat > ca/certs/incorrect_domain_correct_o.ext <<EOF
 subjectAltName = DNS:this-domain-is-not-allowed.com
 EOF
 
 openssl x509 -req \
-  -in ca/certs/not_allowed.csr.pem \
+  -in ca/certs/incorrect_domain_correct_o.csr.pem \
   -CA ca/intermediate/intermediate.cert.pem \
   -CAkey ca/intermediate/intermediate.key.pem -CAcreateserial \
-  -out ca/certs/not_allowed.cert.pem \
+  -out ca/certs/incorrect_domain_correct_o.cert.pem \
   -days 365 -sha256 \
-  -extfile ca/certs/not_allowed.ext
+  -extfile ca/certs/incorrect_domain_correct_o.ext
 ```
 
 ### create-chains
@@ -95,8 +120,9 @@ openssl x509 -req \
 The TLS server needs to send the intermediate cert along with the server cert.
 
 ```bash
-cat ca/certs/not_allowed.cert.pem ca/intermediate/intermediate.cert.pem > ca/certs/not_allowed.chain.pem
 cat ca/certs/allowed.cert.pem ca/intermediate/intermediate.cert.pem > ca/certs/allowed.chain.pem
+cat ca/certs/correct_domain_wrong_o.cert.pem ca/intermediate/intermediate.cert.pem > ca/certs/correct_domain_wrong_o.chain.pem
+cat ca/certs/incorrect_domain_correct_o.cert.pem ca/intermediate/intermediate.cert.pem > ca/certs/incorrect_domain_correct_o.chain.pem
 ```
 
 ### run-go-server
