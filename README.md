@@ -170,3 +170,33 @@ The test client connects to the Go server and validates that the certificates ar
 ```bash
 go run ./client/*.go
 ```
+
+### run-python-client
+
+interactive: true
+
+The test client connects to the Go server and validates that the certificates are accepted or rejected.
+
+```bash
+python3 ./client-python/app.py
+```
+
+### run-node-client
+
+interactive: true
+
+The test client connects to the Go server and validates that the certificates are accepted or rejected.
+
+```bash
+node ./client-node/index.js
+```
+
+### run-dotnet-client
+
+interactive: true
+
+The test client connects to the Go server and validates that the certificates are accepted or rejected.
+
+```bash
+dotnet run --project ./ClientDotNet
+```
