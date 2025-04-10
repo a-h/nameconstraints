@@ -80,7 +80,8 @@ class Program
             .Replace("\n", "");
 
         byte[] certBytes = Convert.FromBase64String(base64);
-        var caCert = new X509Certificate2(certBytes);
+        
+        var caCert = X509CertificateLoader.LoadCertificate(certBytes);
 
         var configs = new List<ClientConf>
         {
